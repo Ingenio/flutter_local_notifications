@@ -155,12 +155,14 @@ public class FlutterLocalNotificationsPlugin implements MethodCallHandler, Plugi
         } else {
             SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
             String defaultIcon = sharedPreferences.getString(DEFAULT_ICON, null);
+            System.out.println("Default notification icon received from preferences: " + defaultIcon);
             if (StringUtils.isNullOrEmpty(defaultIcon)) {
                 // for backwards compatibility: this is for handling the old way references to the icon used to be kept but should be removed in future
                 builder.setSmallIcon(notificationDetails.iconResourceId);
-
             } else {
-                builder.setSmallIcon(getDrawableResourceId(context, defaultIcon));
+                int icon = getDrawableResourceId(context, defaultIcon);
+                System.out.println("Default notification icon resource id: " + icon);
+                builder.setSmallIcon(icon);
             }
         }
     }
@@ -714,7 +716,7 @@ public class FlutterLocalNotificationsPlugin implements MethodCallHandler, Plugi
         Map<String, Object> arguments = call.arguments();
         NotificationDetails notificationDetails = extractNotificationDetails(result, arguments);
         if (notificationDetails != null) {
-            createNotification(registrar.context(), notificationDetails);
+            createNotification(registrar.activeContext(), notificationDetails);
             result.success(null);
         }
     }
@@ -737,10 +739,11 @@ public class FlutterLocalNotificationsPlugin implements MethodCallHandler, Plugi
         if (!isValidDrawableResource(registrar.context(), defaultIcon, result, INVALID_ICON_ERROR_CODE)) {
             return;
         }
+        System.out.println("Default notification icon: " + defaultIcon);
         SharedPreferences sharedPreferences = registrar.context().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(DEFAULT_ICON, defaultIcon);
-        editor.commit();
+        editor.apply();
 
         if (registrar.activity() != null) {
             sendNotificationPayloadMessage(registrar.activity().getIntent());
