@@ -623,6 +623,7 @@ public class FlutterLocalNotificationsPlugin implements MethodCallHandler, Plugi
     public void onMethodCall(MethodCall call, Result result) {
         switch (call.method) {
             case INITIALIZE_METHOD: {
+                System.out.println("initialize");
                 // initializeHeadlessService(call, result);
                 initialize(call, result);
                 break;
@@ -736,10 +737,10 @@ public class FlutterLocalNotificationsPlugin implements MethodCallHandler, Plugi
     private void initialize(MethodCall call, Result result) {
         Map<String, Object> arguments = call.arguments();
         String defaultIcon = (String) arguments.get(DEFAULT_ICON);
+        System.out.println("Default notification icon: " + defaultIcon);
         if (!isValidDrawableResource(registrar.context(), defaultIcon, result, INVALID_ICON_ERROR_CODE)) {
             return;
         }
-        System.out.println("Default notification icon: " + defaultIcon);
         SharedPreferences sharedPreferences = registrar.context().getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(DEFAULT_ICON, defaultIcon);
