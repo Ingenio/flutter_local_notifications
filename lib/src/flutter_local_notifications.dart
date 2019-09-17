@@ -121,9 +121,11 @@ class FlutterLocalNotificationsPlugin {
 
   /// Create a notification channel
   Future<void> createNotificationChannel(int id, NotificationDetails notificationDetails) async {
-    var serializedPlatformSpecifics = _retrievePlatformSpecificNotificationDetails(notificationDetails);
-    await _channel.invokeMethod(
-        'createNotificationChannel', <String, dynamic>{'id': id, 'platformSpecifics': serializedPlatformSpecifics});
+    if (_platform.isAndroid) {
+      var serializedPlatformSpecifics = _retrievePlatformSpecificNotificationDetails(notificationDetails);
+      await _channel.invokeMethod(
+          'createNotificationChannel', <String, dynamic>{'id': id, 'platformSpecifics': serializedPlatformSpecifics});
+    }
   }
 
   /// Cancel/remove the notification with the specified id. This applies to notifications that have been scheduled and those that have already been presented.
