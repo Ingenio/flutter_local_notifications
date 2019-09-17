@@ -60,7 +60,6 @@ bool initialized;
 bool launchingAppFromNotification;
 NSUserDefaults *persistentState;
 NSObject<FlutterPluginRegistrar> *_registrar;
-FlutterLocalNotificationsPlugin* instance;
 
 + (bool) resumingFromBackground { return appResumingFromBackground; }
 UILocalNotification *launchNotification;
@@ -78,8 +77,7 @@ typedef NS_ENUM(NSInteger, RepeatInterval) {
                methodChannelWithName:CHANNEL
                binaryMessenger:[registrar messenger]];
     persistentState = [NSUserDefaults standardUserDefaults];
-    instance = [[FlutterLocalNotificationsPlugin alloc] init];
-
+    FlutterLocalNotificationsPlugin* instance = [[FlutterLocalNotificationsPlugin alloc] init];
     [registrar addApplicationDelegate:instance];
     [registrar addMethodCallDelegate:instance channel:channel];
     _registrar = registrar;
@@ -156,10 +154,6 @@ typedef NS_ENUM(NSInteger, RepeatInterval) {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         UNAuthorizationOptions authorizationOptions = 0;
 
-        if (registerNotificationCenterDelegate) {
-            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-            center.delegate = instance;
-        }
         if (requestedSoundPermission) {
             authorizationOptions += UNAuthorizationOptionSound;
         }
